@@ -14,7 +14,11 @@
 			],
 			"sinks": [
 				{
-					"name": "sink1"
+					"dataset": {
+						"referenceName": "melb_inner_2016_table",
+						"type": "DatasetReference"
+					},
+					"name": "suburbgeotable"
 				}
 			],
 			"transformations": [
@@ -22,7 +26,7 @@
 					"name": "suburbgeo"
 				}
 			],
-			"script": "source(output(\n\t\tareasqkm16 as double,\n\t\tgcc_code16 as string,\n\t\tgcc_name16 as string,\n\t\tsa1_7dig16 as string,\n\t\tsa1_main16 as string,\n\t\tsa2_5dig16 as string,\n\t\tsa2_main16 as string,\n\t\tsa2_name16 as string,\n\t\tsa3_code16 as string,\n\t\tsa3_name16 as string,\n\t\tsa4_code16 as string,\n\t\tsa4_name16 as string,\n\t\tste_code16 as string,\n\t\tste_name16 as string,\n\t\ttype as string,\n\t\tgeometry as (type as string, coordinates as double[][][][])\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> melbinner2016\nmelbinner2016 select(mapColumn(\n\t\tsa2_name16,\n\t\tgeometry\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> suburbgeo\nsuburbgeo sink(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"script": "source(output(\n\t\tareasqkm16 as double,\n\t\tgcc_code16 as string,\n\t\tgcc_name16 as string,\n\t\tsa1_7dig16 as string,\n\t\tsa1_main16 as string,\n\t\tsa2_5dig16 as string,\n\t\tsa2_main16 as string,\n\t\tsa2_name16 as string,\n\t\tsa3_code16 as string,\n\t\tsa3_name16 as string,\n\t\tsa4_code16 as string,\n\t\tsa4_name16 as string,\n\t\tste_code16 as string,\n\t\tste_name16 as string,\n\t\ttype as string,\n\t\tgeometry as (type as string, coordinates as double[][][][])\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> melbinner2016\nmelbinner2016 select(mapColumn(\n\t\tsa2_name16,\n\t\tgeometry\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> suburbgeo\nsuburbgeo sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> suburbgeotable"
 		}
 	}
 }

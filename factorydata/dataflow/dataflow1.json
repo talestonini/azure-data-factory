@@ -1,0 +1,24 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "melb_inner_2016",
+						"type": "DatasetReference"
+					},
+					"name": "melbinner2016"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "suburbgeo"
+				}
+			],
+			"script": "source(output(\n\t\tareasqkm16 as double,\n\t\tgcc_code16 as string,\n\t\tgcc_name16 as string,\n\t\tsa1_7dig16 as string,\n\t\tsa1_main16 as string,\n\t\tsa2_5dig16 as string,\n\t\tsa2_main16 as string,\n\t\tsa2_name16 as string,\n\t\tsa3_code16 as string,\n\t\tsa3_name16 as string,\n\t\tsa4_code16 as string,\n\t\tsa4_name16 as string,\n\t\tste_code16 as string,\n\t\tste_name16 as string,\n\t\ttype as string,\n\t\tgeometry as (type as string, coordinates as double[][][][])\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> melbinner2016\nmelbinner2016 select(mapColumn(\n\t\tareasqkm16,\n\t\tgcc_code16,\n\t\tgcc_name16,\n\t\tsa1_7dig16,\n\t\tsa1_main16,\n\t\tsa2_5dig16,\n\t\tsa2_main16,\n\t\tsa2_name16,\n\t\tsa3_code16,\n\t\tsa3_name16,\n\t\tsa4_code16,\n\t\tsa4_name16,\n\t\tste_code16,\n\t\tste_name16,\n\t\ttype,\n\t\tgeometry\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> suburbgeo"
+		}
+	}
+}

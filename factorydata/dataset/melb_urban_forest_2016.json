@@ -1,0 +1,18 @@
+{
+	"name": "melb_urban_forest_2016",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "myazustoragelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "melb_urban_forest_2016.txt",
+				"container": "urbanforest"
+			}
+		}
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "melb_inner_2016_table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "myazusqldblinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}

@@ -365,6 +365,56 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/denorm_movies')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "sampledata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/denorm_movies_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "sampledata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -592,6 +642,55 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/process_movies')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "movies_table",
+								"type": "DatasetReference"
+							},
+							"name": "moviestable"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "denorm_movies",
+								"type": "DatasetReference"
+							},
+							"name": "json"
+						},
+						{
+							"dataset": {
+								"referenceName": "denorm_movies_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "parquet"
+						}
+					],
+					"transformations": [
+						{
+							"name": "splitgenres"
+						},
+						{
+							"name": "denormalisegenres"
+						}
+					],
+					"script": "source(output(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> moviestable\nmoviestable derive(genres = split(genres,'|')) ~> splitgenres\nsplitgenres foldDown(unroll(genres, genres),\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre = genres,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> denormalisegenres\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> json\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> parquet"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/movies_table')]",
+				"[concat(variables('factoryId'), '/datasets/denorm_movies')]",
+				"[concat(variables('factoryId'), '/datasets/denorm_movies_parquet')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/load_movies_to_db_p8')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -662,6 +761,49 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/CopyPipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "process_movies",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"moviestable": {},
+									"json": {},
+									"parquet": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/process_movies')]"
 			]
 		}
 	]

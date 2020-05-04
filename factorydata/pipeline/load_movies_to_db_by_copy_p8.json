@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "load_movies_to_db_by_copy_p8",
 	"properties": {
 		"activities": [
 			{

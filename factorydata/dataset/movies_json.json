@@ -1,0 +1,17 @@
+{
+	"name": "movies_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "myazudatalakestorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "moviesjson"
+			}
+		}
+	}
+}

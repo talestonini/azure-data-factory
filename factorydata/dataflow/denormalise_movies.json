@@ -1,5 +1,5 @@
 {
-	"name": "process_movies",
+	"name": "denormalise_movies",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {

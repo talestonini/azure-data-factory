@@ -38,7 +38,14 @@
 						"type": "AzureSqlSink"
 					},
 					"enableStaging": false,
-					"enableSkipIncompatibleRow": false,
+					"enableSkipIncompatibleRow": true,
+					"redirectIncompatibleRowSettings": {
+						"linkedServiceName": {
+							"referenceName": "myazustoragelinkedservice",
+							"type": "LinkedServiceReference"
+						},
+						"path": "sampledata"
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [

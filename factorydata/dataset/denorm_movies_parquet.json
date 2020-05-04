@@ -1,0 +1,19 @@
+{
+	"name": "denorm_movies_parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "myazustoragelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "sampledata"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

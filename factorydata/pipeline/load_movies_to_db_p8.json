@@ -1,5 +1,5 @@
 {
-	"name": "load_movies_to_db_pipeline",
+	"name": "load_movies_to_db_p8",
 	"properties": {
 		"activities": [
 			{

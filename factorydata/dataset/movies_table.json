@@ -9,8 +9,9 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "movie",
-				"type": "varchar"
+				"name": "id",
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "title",
@@ -22,15 +23,18 @@
 			},
 			{
 				"name": "year",
-				"type": "varchar"
+				"type": "smallint",
+				"precision": 5
 			},
 			{
 				"name": "rating",
-				"type": "varchar"
+				"type": "smallint",
+				"precision": 5
 			},
 			{
 				"name": "rotten_tomatoes",
-				"type": "varchar"
+				"type": "smallint",
+				"precision": 5
 			}
 		],
 		"typeProperties": {

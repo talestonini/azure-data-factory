@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "dataflow1",
+				"name": "denormalise_movies_p8",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {

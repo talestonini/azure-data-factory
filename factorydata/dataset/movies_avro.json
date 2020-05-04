@@ -1,0 +1,16 @@
+{
+	"name": "movies_avro",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "myazudatalakestorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Avro",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation"
+			}
+		}
+	}
+}

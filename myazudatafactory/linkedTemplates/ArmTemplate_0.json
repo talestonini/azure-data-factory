@@ -93,6 +93,56 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/denorm_movies')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "sampledata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/denorm_movies_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "sampledata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/melb_inner_2016')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -365,56 +415,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/denorm_movies')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "myazustoragelinkedservice",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "sampledata"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/denorm_movies_parquet')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "myazustoragelinkedservice",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "sampledata"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -604,44 +604,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/load_movies_to_db')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "moviesDB",
-								"type": "DatasetReference"
-							},
-							"name": "movies"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "movies_table",
-								"type": "DatasetReference"
-							},
-							"name": "moviestable"
-						}
-					],
-					"transformations": [
-						{
-							"name": "fixcolyear"
-						}
-					],
-					"script": "source(output(\n\t\tmovie as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as short,\n\t\tRating as short,\n\t\t{Rotton Tomato} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> movies\nmovies derive(year = abs(toInteger(year))) ~> fixcolyear\nfixcolyear sink(input(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid = movie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\trating = Rating,\n\t\trotten_tomatoes = {Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> moviestable"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/moviesDB')]",
-				"[concat(variables('factoryId'), '/datasets/movies_table')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/denormalise_movies')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -691,6 +653,44 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/load_movies_to_db')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "moviesDB",
+								"type": "DatasetReference"
+							},
+							"name": "movies"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "movies_table",
+								"type": "DatasetReference"
+							},
+							"name": "moviestable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "fixcolyear"
+						}
+					],
+					"script": "source(output(\n\t\tmovie as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as short,\n\t\tRating as short,\n\t\t{Rotton Tomato} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> movies\nmovies derive(year = abs(toInteger(year))) ~> fixcolyear\nfixcolyear sink(input(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid = movie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\trating = Rating,\n\t\trotten_tomatoes = {Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> moviestable"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/moviesDB')]",
+				"[concat(variables('factoryId'), '/datasets/movies_table')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/load_movies_to_db_p8')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -733,44 +733,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "CopyPipeline",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 1,
-						"startTime": "2020-04-30T04:34:00.000Z",
-						"endTime": "2020-04-30T14:50:00.000Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/CopyPipeline')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/denormalise_movies_p8')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "dataflow1",
+						"name": "denormalise_movies_p8",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -804,6 +773,37 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/denormalise_movies')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "CopyPipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 1,
+						"startTime": "2020-04-30T04:34:00.000Z",
+						"endTime": "2020-04-30T14:50:00.000Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyPipeline')]"
 			]
 		}
 	]

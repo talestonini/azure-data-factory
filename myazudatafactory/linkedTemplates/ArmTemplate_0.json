@@ -14,6 +14,14 @@
 		"myazustoragelinkedservice_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'myazustoragelinkedservice'"
+		},
+		"myazudatalakestorage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'myazudatalakestorage'"
+		},
+		"myazudatalakestorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://myazustorage.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -42,6 +50,23 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('myazustoragelinkedservice_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/myazudatalakestorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('myazudatalakestorage_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('myazudatalakestorage_accountKey')]"
+					}
 				}
 			},
 			"dependsOn": []
@@ -415,6 +440,28 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/movies_avro')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazudatalakestorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazudatalakestorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -633,6 +680,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "parquet"
+						},
+						{
+							"dataset": {
+								"referenceName": "movies_avro",
+								"type": "DatasetReference"
+							},
+							"name": "avro"
 						}
 					],
 					"transformations": [
@@ -643,13 +697,14 @@
 							"name": "denormalisegenres"
 						}
 					],
-					"script": "source(output(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> moviestable\nmoviestable derive(genres = split(genres,'|')) ~> splitgenres\nsplitgenres foldDown(unroll(genres, genres),\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre = genres,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> denormalisegenres\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> json\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> parquet"
+					"script": "source(output(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> moviestable\nmoviestable derive(genres = split(genres,'|')) ~> splitgenres\nsplitgenres foldDown(unroll(genres, genres),\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre = genres,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> denormalisegenres\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> json\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> parquet\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> avro"
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/movies_table')]",
 				"[concat(variables('factoryId'), '/datasets/denorm_movies')]",
-				"[concat(variables('factoryId'), '/datasets/denorm_movies_parquet')]"
+				"[concat(variables('factoryId'), '/datasets/denorm_movies_parquet')]",
+				"[concat(variables('factoryId'), '/datasets/movies_avro')]"
 			]
 		},
 		{
@@ -758,7 +813,8 @@
 								"datasetParameters": {
 									"moviestable": {},
 									"json": {},
-									"parquet": {}
+									"parquet": {},
+									"avro": {}
 								}
 							},
 							"staging": {},

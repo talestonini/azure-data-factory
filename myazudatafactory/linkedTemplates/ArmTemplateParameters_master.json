@@ -11,6 +11,12 @@
 		"myazustoragelinkedservice_connectionString": {
 			"value": ""
 		},
+		"myazudatalakestorage_accountKey": {
+			"value": ""
+		},
+		"myazudatalakestorage_properties_typeProperties_url": {
+			"value": "https://myazustorage.dfs.core.windows.net"
+		},
 		"containerUri": {
 			"value": ""
 		},

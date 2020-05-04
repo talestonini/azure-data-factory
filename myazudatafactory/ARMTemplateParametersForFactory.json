@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "myazudatafactory"
 		},
+		"myazusqldblinkedservice_connectionString": {
+			"value": ""
+		},
 		"myazustoragelinkedservice_connectionString": {
 			"value": ""
 		}

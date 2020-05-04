@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "myazudatafactory"
 		},
+		"myazusqldblinkedservice_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'myazusqldblinkedservice'"
+		},
 		"myazustoragelinkedservice_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'myazustoragelinkedservice'"
@@ -37,6 +41,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"myazusqldblinkedservice_connectionString": {
+						"value": "[parameters('myazusqldblinkedservice_connectionString')]"
 					},
 					"myazustoragelinkedservice_connectionString": {
 						"value": "[parameters('myazustoragelinkedservice_connectionString')]"

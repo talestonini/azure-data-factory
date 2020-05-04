@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "myazudatafactory"
 		},
+		"myazusqldblinkedservice_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'myazusqldblinkedservice'"
+		},
 		"myazustoragelinkedservice_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'myazustoragelinkedservice'"
@@ -120,6 +124,237 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/melb_inner_2016')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "melb_inner_2016.json",
+						"container": "urbanforest"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"areasqkm16": {
+							"type": "number"
+						},
+						"gcc_code16": {
+							"type": "string"
+						},
+						"gcc_name16": {
+							"type": "string"
+						},
+						"sa1_7dig16": {
+							"type": "string"
+						},
+						"sa1_main16": {
+							"type": "string"
+						},
+						"sa2_5dig16": {
+							"type": "string"
+						},
+						"sa2_main16": {
+							"type": "string"
+						},
+						"sa2_name16": {
+							"type": "string"
+						},
+						"sa3_code16": {
+							"type": "string"
+						},
+						"sa3_name16": {
+							"type": "string"
+						},
+						"sa4_code16": {
+							"type": "string"
+						},
+						"sa4_name16": {
+							"type": "string"
+						},
+						"ste_code16": {
+							"type": "string"
+						},
+						"ste_name16": {
+							"type": "string"
+						},
+						"type": {
+							"type": "string"
+						},
+						"geometry": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string"
+								},
+								"coordinates": {
+									"type": "array",
+									"items": {
+										"type": "array",
+										"items": {
+											"type": "array",
+											"items": {
+												"type": "array",
+												"items": {
+													"type": "number"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/melb_urban_forest_2016')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "melb_urban_forest_2016.txt",
+						"container": "urbanforest"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/moviesDB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazustoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "moviesDB.csv",
+						"container": "sampledata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "movie",
+						"type": "String"
+					},
+					{
+						"name": "title",
+						"type": "String"
+					},
+					{
+						"name": "genres",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "Rating",
+						"type": "String"
+					},
+					{
+						"name": "Rotton Tomato",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/movies_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "myazusqldblinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "movie",
+						"type": "varchar"
+					},
+					{
+						"name": "title",
+						"type": "varchar"
+					},
+					{
+						"name": "genres",
+						"type": "varchar"
+					},
+					{
+						"name": "year",
+						"type": "varchar"
+					},
+					{
+						"name": "rating",
+						"type": "varchar"
+					},
+					{
+						"name": "rotten_tomatoes",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "movies"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myazusqldblinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/myazusqldblinkedservice')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('myazusqldblinkedservice_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/myazustoragelinkedservice')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -161,6 +396,40 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/CopyPipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/load_movies_to_db')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "moviesDB",
+								"type": "DatasetReference"
+							},
+							"name": "movies"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "movies_table",
+								"type": "DatasetReference"
+							},
+							"name": "moviestable"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> movies\nmovies sink(input(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\trating as string,\n\t\trotten_tomatoes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tmovie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\trating = Rating,\n\t\trotten_tomatoes = {Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> moviestable"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/moviesDB')]",
+				"[concat(variables('factoryId'), '/datasets/movies_table')]"
 			]
 		}
 	]

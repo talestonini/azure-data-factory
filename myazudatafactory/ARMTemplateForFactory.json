@@ -161,14 +161,7 @@
 								"type": "AzureSqlSink"
 							},
 							"enableStaging": false,
-							"enableSkipIncompatibleRow": true,
-							"redirectIncompatibleRowSettings": {
-								"linkedServiceName": {
-									"referenceName": "myazustoragelinkedservice",
-									"type": "LinkedServiceReference"
-								},
-								"path": "sampledata"
-							},
+							"enableSkipIncompatibleRow": false,
 							"translator": {
 								"type": "TabularTranslator",
 								"mappings": [
@@ -179,7 +172,7 @@
 										},
 										"sink": {
 											"name": "id",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -209,7 +202,7 @@
 										},
 										"sink": {
 											"name": "year",
-											"type": "Int16"
+											"type": "String"
 										}
 									},
 									{
@@ -219,7 +212,7 @@
 										},
 										"sink": {
 											"name": "rating",
-											"type": "Int16"
+											"type": "String"
 										}
 									},
 									{
@@ -229,7 +222,7 @@
 										},
 										"sink": {
 											"name": "rotten_tomatoes",
-											"type": "Int16"
+											"type": "String"
 										}
 									}
 								]
@@ -255,8 +248,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/moviesDB')]",
-				"[concat(variables('factoryId'), '/datasets/movies_copy_table')]",
-				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
+				"[concat(variables('factoryId'), '/datasets/movies_copy_table')]"
 			]
 		},
 		{

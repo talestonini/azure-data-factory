@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "denormalise_movies_p8",
 	"properties": {
 		"activities": [
 			{

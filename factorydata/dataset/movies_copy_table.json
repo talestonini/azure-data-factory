@@ -1,0 +1,45 @@
+{
+	"name": "movies_copy_table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "myazusqldblinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "title",
+				"type": "varchar"
+			},
+			{
+				"name": "genres",
+				"type": "varchar"
+			},
+			{
+				"name": "year",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "rating",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "rotten_tomatoes",
+				"type": "smallint",
+				"precision": 5
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "movies_copy"
+		}
+	}
+}

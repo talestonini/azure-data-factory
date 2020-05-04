@@ -684,7 +684,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "process_movies",
+								"referenceName": "denormalise_movies",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -704,11 +704,11 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/process_movies')]"
+				"[concat(variables('factoryId'), '/dataflows/denormalise_movies')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/process_movies')]",
+			"name": "[concat(parameters('factoryName'), '/denormalise_movies')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {

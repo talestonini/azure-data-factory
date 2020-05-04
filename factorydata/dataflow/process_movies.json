@@ -1,0 +1,31 @@
+{
+	"name": "process_movies",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "movies_table",
+						"type": "DatasetReference"
+					},
+					"name": "moviestable"
+				}
+			],
+			"sinks": [
+				{
+					"name": "json"
+				}
+			],
+			"transformations": [
+				{
+					"name": "splitgenres"
+				},
+				{
+					"name": "denormalisegenres"
+				}
+			],
+			"script": "source(output(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> moviestable\nmoviestable derive(genres = split(genres,'|')) ~> splitgenres\nsplitgenres foldDown(unroll(genres, genres),\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre = genres,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> denormalisegenres\ndenormalisegenres sink(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> json"
+		}
+	}
+}

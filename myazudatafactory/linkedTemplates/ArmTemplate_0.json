@@ -463,7 +463,14 @@
 								"type": "AzureSqlSink"
 							},
 							"enableStaging": false,
-							"enableSkipIncompatibleRow": false,
+							"enableSkipIncompatibleRow": true,
+							"redirectIncompatibleRowSettings": {
+								"linkedServiceName": {
+									"referenceName": "myazustoragelinkedservice",
+									"type": "LinkedServiceReference"
+								},
+								"path": "sampledata"
+							},
 							"translator": {
 								"type": "TabularTranslator",
 								"mappings": [
@@ -550,7 +557,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/moviesDB')]",
-				"[concat(variables('factoryId'), '/datasets/movies_copy_table')]"
+				"[concat(variables('factoryId'), '/datasets/movies_copy_table')]",
+				"[concat(variables('factoryId'), '/linkedServices/myazustoragelinkedservice')]"
 			]
 		},
 		{

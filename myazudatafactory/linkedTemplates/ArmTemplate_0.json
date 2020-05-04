@@ -452,7 +452,8 @@
 				"type": "Avro",
 				"typeProperties": {
 					"location": {
-						"type": "AzureBlobFSLocation"
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "sampledata2"
 					}
 				},
 				"schema": {}
@@ -697,7 +698,7 @@
 							"name": "denormalisegenres"
 						}
 					],
-					"script": "source(output(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> moviestable\nmoviestable derive(genres = split(genres,'|')) ~> splitgenres\nsplitgenres foldDown(unroll(genres, genres),\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre = genres,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> denormalisegenres\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> json\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> parquet\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> avro"
+					"script": "source(output(\n\t\tid as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as integer,\n\t\trating as integer,\n\t\trotten_tomatoes as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> moviestable\nmoviestable derive(genres = split(genres,'|')) ~> splitgenres\nsplitgenres foldDown(unroll(genres, genres),\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre = genres,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> denormalisegenres\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> json\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> parquet\ndenormalisegenres sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tmapColumn(\n\t\tid,\n\t\ttitle,\n\t\tgenre,\n\t\tyear,\n\t\trating,\n\t\trotten_tomatoes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> avro"
 				}
 			},
 			"dependsOn": [
